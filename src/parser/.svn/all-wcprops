@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 40
+/svn/!svn/ver/3/trunk/EasyDLX/src/parser
+END
+EasyDLXParser.java
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/!svn/ver/3/trunk/EasyDLX/src/parser/EasyDLXParser.java
+END
+ParseException.java
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/!svn/ver/3/trunk/EasyDLX/src/parser/ParseException.java
+END
+Token.java
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/!svn/ver/3/trunk/EasyDLX/src/parser/Token.java
+END
+TokenMgrError.java
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/!svn/ver/3/trunk/EasyDLX/src/parser/TokenMgrError.java
+END
+SimpleCharStream.java
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/!svn/ver/3/trunk/EasyDLX/src/parser/SimpleCharStream.java
+END
+EasyDLXParserConstants.java
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/!svn/ver/3/trunk/EasyDLX/src/parser/EasyDLXParserConstants.java
+END
+EasyDLXParserTokenManager.java
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/!svn/ver/3/trunk/EasyDLX/src/parser/EasyDLXParserTokenManager.java
+END

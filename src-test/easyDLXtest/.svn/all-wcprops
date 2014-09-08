@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/!svn/ver/3/trunk/EasyDLX/src-test/easyDLXtest
+END
+AllTests.java
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/!svn/ver/3/trunk/EasyDLX/src-test/easyDLXtest/AllTests.java
+END
+TestRegistersManager.java
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/!svn/ver/3/trunk/EasyDLX/src-test/easyDLXtest/TestRegistersManager.java
+END
+TestSimulatedMemory.java
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/!svn/ver/3/trunk/EasyDLX/src-test/easyDLXtest/TestSimulatedMemory.java
+END
+TestLabelManager.java
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/!svn/ver/3/trunk/EasyDLX/src-test/easyDLXtest/TestLabelManager.java
+END
+TestControlFlow.java
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/!svn/ver/3/trunk/EasyDLX/src-test/easyDLXtest/TestControlFlow.java
+END
+TestALU.java
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/!svn/ver/3/trunk/EasyDLX/src-test/easyDLXtest/TestALU.java
+END
+TestMachine.java
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/!svn/ver/3/trunk/EasyDLX/src-test/easyDLXtest/TestMachine.java
+END

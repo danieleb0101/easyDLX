@@ -1,0 +1,491 @@
+/**
+ Copyright (c) 2011 Daniele Biagi
+Permission is hereby granted, free of charge, to any person obtaining a copy of this 
+software and associated documentation files (the "Software"), to deal in the Software 
+without restriction, including without limitation the rights to use, copy, modify, 
+merge, publish, distribute, sublicense, and/or sell copies of the Software, and to 
+permit persons to whom the Software is furnished to do so, subject to the following 
+conditions:
+
+The above copyright notice and this permission notice shall be included in all copies
+or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE 
+LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, 
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE 
+OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+package easyDLXvisitor;
+
+import java.util.Enumeration;
+import java.util.Hashtable;
+
+import syntaxtree.Goal;
+import syntaxtree.Immed;
+import syntaxtree.Instr2RegImm;
+import syntaxtree.Instr3Regs;
+import syntaxtree.InstrBranch;
+import syntaxtree.InstrJumpLab;
+import syntaxtree.InstrJumpReg;
+import syntaxtree.InstrLoad;
+import syntaxtree.InstrStore;
+import syntaxtree.Instruction;
+import syntaxtree.Label;
+import syntaxtree.Node;
+import syntaxtree.NodeList;
+import syntaxtree.NodeListOptional;
+import syntaxtree.NodeOptional;
+import syntaxtree.NodeSequence;
+import syntaxtree.NodeToken;
+import syntaxtree.Nop;
+import syntaxtree.Op2RegsImm;
+import syntaxtree.Op3Regs;
+import syntaxtree.OpBranch;
+import syntaxtree.OpJumpLab;
+import syntaxtree.OpJumpReg;
+import syntaxtree.OpLoad;
+import syntaxtree.OpStore;
+import syntaxtree.Register;
+import visitor.DepthFirstVisitor;
+import easyDLXeditor.EasyDLXCursorPCTable;
+import easyDLXeditor.EasyDLXCursors;
+import easyDLXsimulation.EasyDLXALU;
+import easyDLXsimulation.EasyDLXMachineGlobalState;
+import easyDLXsimulation.EasyDLXMemoryManager;
+import easyDLXsimulation.EasyDLXSemanticError;
+/**
+ * 
+ * @author Daniele Biagi  biagi.daniele@gmail.com
+ *
+ */
+public class EasyDLXVisitorReferences extends DepthFirstVisitor{
+
+	private Node temp;
+	private EasyDLXMachineGlobalState machine;
+	private String currentPC;
+	private int cursor;
+	private int instructionIndex;
+	private Hashtable<String, EasyDLXCursors> references;
+	private EasyDLXSemanticError semanticError;
+	private int number;
+	private String binaryString="";
+	private String opName="";
+	private boolean isImmediate= false;
+	private String regName="";
+	private EasyDLXCursorPCTable pcTable;
+
+	public EasyDLXVisitorReferences(EasyDLXMachineGlobalState machine, String currentPC, int cursor, int instructionIndex, Hashtable<String, EasyDLXCursors> references, EasyDLXSemanticError semanticError,EasyDLXCursorPCTable pcTable) {
+		super();
+		this.machine= machine;
+		this.currentPC= currentPC;
+		this.cursor= cursor;
+		this.instructionIndex= instructionIndex;
+		this.references= references;
+		this.semanticError= semanticError;
+		this.pcTable= pcTable;
+	}
+
+	public void visit(NodeList n) {
+		for ( Enumeration<Node> e = n.elements(); e.hasMoreElements(); ){
+			temp = e.nextElement();
+			// debug
+			//System.out.println("Node List: " + temp.toString());
+			temp.accept(this);
+
+		}
+	}
+
+	public void visit(NodeListOptional n) {
+		if ( n.present() )
+			for ( Enumeration<Node> e = n.elements(); e.hasMoreElements(); ){
+				temp = e.nextElement();
+				// debug
+				//System.out.println("Node ListOptional: " + temp.toString());
+				temp.accept(this);
+
+			}
+	}
+
+	public void visit(NodeOptional n) {
+		if ( n.present() ){
+			// debug
+			//System.out.println("Node Optional: " + n.node.toString());
+			n.node.accept(this);
+
+		}
+	}
+
+	public void visit(NodeSequence n) {
+		for ( Enumeration<Node> e = n.elements(); e.hasMoreElements(); ){
+			temp = e.nextElement();
+			// debug
+			//System.out.println("Node Sequence: " + temp.toString());
+			temp.accept(this);
+
+		}
+	}
+
+	public void visit(NodeToken n) {
+		//debug
+	//	System.out.println("visit " + n.tokenImage);
+	}
+
+	//
+	// User-generated visitor methods below
+	//
+
+	/**
+	 * f0 -> [ Label() ]
+	 * f1 -> Instruction()
+	 * f2 -> <SEMICOLON>
+	 */
+	public void visit(Goal n) {
+		n.f0.accept(this);
+		n.f1.accept(this);
+		if (isImmediate){
+			if (!semanticError.isError()){
+				if (!opName.endsWith("UI")){
+					if((number>32767)||(number<-32768)){
+						semanticError.setError(true, "Error immediate value \""+number+"\",\n it must be a signed number between -32768 and 32767,\n(signed number with 16 bits), at line ");
+					}			
+				}else{
+					if ((number<0)||(number>65535)){
+						semanticError.setError(true, "Error immediate value \""+number+"\",\n it must be an unsigned number between 0 and 65535,\n(unsigned number with 16 bits), at line ");
+					}
+				}
+			}
+		}
+
+		n.f2.accept(this);
+		//now let's write the instruction in the memory
+		if (!semanticError.isError()){
+			machine.getSimulatedMemory().storeByte(currentPC, "CODE");
+			
+			String pc=EasyDLXALU.add(currentPC, EasyDLXMemoryManager.signExtentionTo32bits(Integer.toBinaryString(1)), false);
+			machine.getSimulatedMemory().storeByte(pc, "CODE");
+			
+			pc=EasyDLXALU.add(currentPC, EasyDLXMemoryManager.signExtentionTo32bits(Integer.toBinaryString(2)), false);
+			machine.getSimulatedMemory().storeByte(pc, "CODE");
+			
+			pc=EasyDLXALU.add(currentPC, EasyDLXMemoryManager.signExtentionTo32bits(Integer.toBinaryString(3)), false);
+			machine.getSimulatedMemory().storeByte(pc, "CODE");
+			
+			pcTable.addPC(currentPC, new EasyDLXCursors(cursor, instructionIndex));
+			
+		}
+	}
+
+	/**
+	 * f0 -> <LABEL_COLON>
+	 */
+	public void visit(Label n) {
+		n.f0.accept(this);
+
+		if(!machine.getLabelsManager().addLabel(n.f0.tokenImage.replaceAll(":","").trim(), currentPC)){
+			semanticError.setError(true, "The same label  \""+n.f0.tokenImage.trim().replaceFirst(":", "")+"\" has been defined at least two times,\n at line");
+
+		}
+	}
+
+	/**
+	 * f0 -> Instr3Regs()
+	 *       | Instr2RegImm()
+	 *       | InstrLoad()
+	 *       | InstrStore()
+	 *       | InstrBranch()
+	 *       | InstrJumpReg()
+	 *       | InstrJumpLab()
+	 *       | Nop()
+	 */
+	public void visit(Instruction n) {
+		n.f0.accept(this);
+	}
+
+	/**
+	 * f0 -> Op3Regs()
+	 * f1 -> Register()
+	 * f2 -> <COMMA>
+	 * f3 -> Register()
+	 * f4 -> <COMMA>
+	 * f5 -> Register()
+	 */
+	public void visit(Instr3Regs n) {
+		n.f0.accept(this);
+		n.f1.accept(this);
+		
+		if(regName.trim().compareTo("R0")==0){
+			semanticError.setError(true, "R0 cannot be the destination register,\nat line");
+		}
+		
+		n.f2.accept(this);
+		n.f3.accept(this);
+		n.f4.accept(this);
+		n.f5.accept(this);
+	}
+
+	/**
+	 * f0 -> "ADD"
+	 *       | "ADDU"
+	 *       | "SUB"
+	 *       | "SUBU"
+	 *       | "MULT"
+	 *       | "MULTU"
+	 *       | "DIV"
+	 *       | "DIVU"
+	 *       | "AND"
+	 *       | "OR"
+	 *       | "XOR"
+	 *       | "SLL"
+	 *       | "SRL"
+	 *       | "SLT"
+	 *       | "SGT"
+	 *       | "SLE"
+	 *       | "SGE"
+	 *       | "SEQ"
+	 *       | "SNE"
+	 */
+	public void visit(Op3Regs n) {
+		n.f0.accept(this);
+		opName= n.f0.choice.toString().trim();
+
+	}
+
+	/**
+	 * f0 -> Op2RegsImm()
+	 * f1 -> Register()
+	 * f2 -> <COMMA>
+	 * f3 -> Register()
+	 * f4 -> <COMMA>
+	 * f5 -> Immed()
+	 */
+	public void visit(Instr2RegImm n) {
+		n.f0.accept(this);
+		n.f1.accept(this);
+		
+		if(regName.trim().compareTo("R0")==0){
+			semanticError.setError(true, "R0 cannot be the destination register,\nat line");
+		}
+		
+		n.f2.accept(this);
+		n.f3.accept(this);
+		n.f4.accept(this);
+		n.f5.accept(this);
+	}
+
+	/**
+	 * f0 -> "ADDI"
+	 *       | "ADDUI"
+	 *       | "SUBI"
+	 *       | "SUBUI"
+	 *       | "ANDI"
+	 *       | "ORI"
+	 *       | "XORI"
+	 *       | "SLLI"
+	 *       | "SRLI"
+	 *       | "SLTI"
+	 *       | "SGTI"
+	 *       | "SLEI"
+	 *       | "SGEI"
+	 *       | "SEQI"
+	 *       | "SNEI"
+	 */
+	public void visit(Op2RegsImm n) {
+		n.f0.accept(this);
+		opName= n.f0.choice.toString().trim();
+	}
+
+	/**
+	 * f0 -> OpLoad()
+	 * f1 -> Register()
+	 * f2 -> <COMMA>
+	 * f3 -> Immed()
+	 * f4 -> <OPEN_BRACKET>
+	 * f5 -> Register()
+	 * f6 -> <CLOSE_BRACKET>
+	 */
+	public void visit(InstrLoad n) {
+		n.f0.accept(this);
+		n.f1.accept(this);
+		if(regName.trim().compareTo("R0")==0){
+			semanticError.setError(true, "R0 cannot be the destination register,\nat line");
+		}
+		n.f2.accept(this);
+		n.f3.accept(this);
+		n.f4.accept(this);
+		n.f5.accept(this);
+		n.f6.accept(this);
+	}
+
+	/**
+	 * f0 -> "LB"
+	 *       | "LBU"
+	 *       | "LH"
+	 *       | "LHU"
+	 *       | "LW"
+	 */
+	public void visit(OpLoad n) {
+		n.f0.accept(this);
+		opName= n.f0.choice.toString().trim();
+	}
+
+	/**
+	 * f0 -> OpStore()
+	 * f1 -> Immed()
+	 * f2 -> <OPEN_BRACKET>
+	 * f3 -> Register()
+	 * f4 -> <CLOSE_BRACKET>
+	 * f5 -> <COMMA>
+	 * f6 -> Register()
+	 */
+	public void visit(InstrStore n) {
+		n.f0.accept(this);
+		n.f1.accept(this);
+		n.f2.accept(this);
+		n.f3.accept(this);
+		n.f4.accept(this);
+		n.f5.accept(this);
+		n.f6.accept(this);
+	}
+
+	/**
+	 * f0 -> "SB"
+	 *       | "SH"
+	 *       | "SW"
+	 */
+	public void visit(OpStore n) {
+		n.f0.accept(this);
+		opName= n.f0.choice.toString().trim();
+	}
+
+	/**
+	 * f0 -> OpBranch()
+	 * f1 -> Register()
+	 * f2 -> <COMMA>
+	 * f3 -> <LABELJ>
+	 */
+	public void visit(InstrBranch n) {
+		n.f0.accept(this);
+		n.f1.accept(this);
+		n.f2.accept(this);
+		n.f3.accept(this);
+		references.put(n.f3.tokenImage.trim(), new EasyDLXCursors(cursor, instructionIndex));
+		
+	}
+
+	/**
+	 * f0 -> "BEQZ"
+	 *       | "BNEZ"
+	 */
+	public void visit(OpBranch n) {
+		n.f0.accept(this);
+		opName= n.f0.choice.toString().trim();
+	}
+
+	/**
+	 * f0 -> OpJumpReg()
+	 * f1 -> Register()
+	 */
+	public void visit(InstrJumpReg n) {
+		n.f0.accept(this);
+		n.f1.accept(this);
+	}
+
+	/**
+	 * f0 -> "JR"
+	 *       | "JALR"
+	 */
+	public void visit(OpJumpReg n) {
+		n.f0.accept(this);
+		opName= n.f0.choice.toString().trim();
+	}
+
+	/**
+	 * f0 -> OpJumpLab()
+	 * f1 -> <LABELJ>
+	 */
+	public void visit(InstrJumpLab n) {
+		n.f0.accept(this);
+		n.f1.accept(this);
+		references.put(n.f1.tokenImage.trim(), new EasyDLXCursors(cursor, instructionIndex));
+	}
+
+	/**
+	 * f0 -> "J"
+	 *       | "JAL"
+	 */
+	public void visit(OpJumpLab n) {
+		n.f0.accept(this);
+		opName= n.f0.choice.toString().trim();
+	}
+
+	/**
+	 * f0 -> "NOP"
+	 */
+	public void visit(Nop n) {
+		n.f0.accept(this);
+		opName= n.f0.tokenImage.trim();
+	}
+
+	/**
+	 * f0 -> <NUMBER>
+	 */
+	public void visit(Immed n) {
+		n.f0.accept(this);
+		try{
+			number= Integer.parseInt(n.f0.tokenImage.trim());
+			binaryString= Integer.toBinaryString(number);
+			binaryString=EasyDLXMemoryManager.signExtentionTo32bits(binaryString);
+			
+			isImmediate= true;			
+		}catch (Exception e) {
+			semanticError.setError(true, "Error immediate value \""+n.f0.tokenImage.trim()+"\",\n it must be a number that can be represented with 16 bits,\n at line ");
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * f0 -> "R0"
+	 *       | "R1"
+	 *       | "R2"
+	 *       | "R3"
+	 *       | "R4"
+	 *       | "R5"
+	 *       | "R6"
+	 *       | "R7"
+	 *       | "R8"
+	 *       | "R9"
+	 *       | "R10"
+	 *       | "R11"
+	 *       | "R12"
+	 *       | "R13"
+	 *       | "R14"
+	 *       | "R15"
+	 *       | "R16"
+	 *       | "R17"
+	 *       | "R18"
+	 *       | "R19"
+	 *       | "R20"
+	 *       | "R21"
+	 *       | "R22"
+	 *       | "R23"
+	 *       | "R24"
+	 *       | "R25"
+	 *       | "R26"
+	 *       | "R27"
+	 *       | "R28"
+	 *       | "R29"
+	 *       | "R30"
+	 *       | "R31"
+	 */
+	public void visit(Register n) {
+		n.f0.accept(this);
+		regName= n.f0.choice.toString().trim();
+	}
+
+}
+
+
+
+

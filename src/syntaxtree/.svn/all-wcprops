@@ -1,0 +1,173 @@
+K 25
+svn:wc:ra_dav:version-url
+V 44
+/svn/!svn/ver/3/trunk/EasyDLX/src/syntaxtree
+END
+Nop.java
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/!svn/ver/3/trunk/EasyDLX/src/syntaxtree/Nop.java
+END
+InstrBranch.java
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/!svn/ver/3/trunk/EasyDLX/src/syntaxtree/InstrBranch.java
+END
+Instruction.java
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/!svn/ver/3/trunk/EasyDLX/src/syntaxtree/Instruction.java
+END
+Immed.java
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/3/trunk/EasyDLX/src/syntaxtree/Immed.java
+END
+OpLoad.java
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/3/trunk/EasyDLX/src/syntaxtree/OpLoad.java
+END
+Instr3Regs.java
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/!svn/ver/3/trunk/EasyDLX/src/syntaxtree/Instr3Regs.java
+END
+OpJumpReg.java
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/!svn/ver/3/trunk/EasyDLX/src/syntaxtree/OpJumpReg.java
+END
+NodeChoice.java
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/!svn/ver/3/trunk/EasyDLX/src/syntaxtree/NodeChoice.java
+END
+NodeSequence.java
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/!svn/ver/3/trunk/EasyDLX/src/syntaxtree/NodeSequence.java
+END
+OpBranch.java
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/!svn/ver/3/trunk/EasyDLX/src/syntaxtree/OpBranch.java
+END
+Register.java
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/!svn/ver/3/trunk/EasyDLX/src/syntaxtree/Register.java
+END
+Node.java
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/!svn/ver/3/trunk/EasyDLX/src/syntaxtree/Node.java
+END
+NodeOptional.java
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/!svn/ver/3/trunk/EasyDLX/src/syntaxtree/NodeOptional.java
+END
+NodeList.java
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/!svn/ver/3/trunk/EasyDLX/src/syntaxtree/NodeList.java
+END
+NodeListOptional.java
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/!svn/ver/3/trunk/EasyDLX/src/syntaxtree/NodeListOptional.java
+END
+OpStore.java
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/!svn/ver/3/trunk/EasyDLX/src/syntaxtree/OpStore.java
+END
+OpJumpLab.java
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/!svn/ver/3/trunk/EasyDLX/src/syntaxtree/OpJumpLab.java
+END
+Instr2RegImm.java
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/!svn/ver/3/trunk/EasyDLX/src/syntaxtree/Instr2RegImm.java
+END
+InstrJumpReg.java
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/!svn/ver/3/trunk/EasyDLX/src/syntaxtree/InstrJumpReg.java
+END
+NodeListInterface.java
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/!svn/ver/3/trunk/EasyDLX/src/syntaxtree/NodeListInterface.java
+END
+Op2RegsImm.java
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/!svn/ver/3/trunk/EasyDLX/src/syntaxtree/Op2RegsImm.java
+END
+NodeToken.java
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/!svn/ver/3/trunk/EasyDLX/src/syntaxtree/NodeToken.java
+END
+InstrStore.java
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/!svn/ver/3/trunk/EasyDLX/src/syntaxtree/InstrStore.java
+END
+Label.java
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/3/trunk/EasyDLX/src/syntaxtree/Label.java
+END
+Goal.java
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/!svn/ver/3/trunk/EasyDLX/src/syntaxtree/Goal.java
+END
+InstrJumpLab.java
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/!svn/ver/3/trunk/EasyDLX/src/syntaxtree/InstrJumpLab.java
+END
+InstrLoad.java
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/!svn/ver/3/trunk/EasyDLX/src/syntaxtree/InstrLoad.java
+END
+Op3Regs.java
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/!svn/ver/3/trunk/EasyDLX/src/syntaxtree/Op3Regs.java
+END
